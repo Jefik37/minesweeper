@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport">
+    <link rel="stylesheet" href="./style.css">
+    <link rel="icon" type="image/x-icon" href="./assets/smiley/sunglasses.png">
+    <title>Minesweeper</title>
+</head>
+<body>
+
+    <script src="preload.js"></script>
+
+
+    <div id="mainWindow" class="outerBorder">
+        <div class="outerBorder">
+            <div class="outerBorder">
+
+                <div class="innerBorder marginBorder">
+                    <div id='visor' class="innerBorder">
+                        <div id="mineCount" class="lcd innerBorder"></div>
+                        <img src="./assets/smiley/smiley.png" id="smiley" class="innerBorder">
+                        <div id="timer" class="lcd innerBorder"></div>
+                    </div>
+                </div>
+
+                    <div id='outerGrid' class="innerBorder marginBorder">
+                        <div class="innerBorder">
+                            <div id="grid" class="innerBorder"></div>
+                        </div>
+                    </div>
+
+                    <div id="outerMenu" class="innerBorder centeredDivs marginBorder" style="display: none;">
+                        <div class="innerBorder menuBorder">
+                            <div id="menuBorder" class="innerBorder centeredDivs menuBorder">
+                                <div id="menu" class="centeredDivs">
+                                    
+                                    <div id="currentTimeDiv">Time: <b id="currentTime"></b>s</div>
+
+                                    <div id="difficulties">
+                                        <div></div>
+                                        <div>Height</div>
+                                        <div>Width</div>
+                                        <div>Mines</div>
+
+                                        <label><input type="radio" name="difficulty" value="beginner" checked> Beginner</label>
+                                        <div>9</div>
+                                        <div>9</div>
+                                        <div>10</div>
+
+                                        <label><input type="radio" name="difficulty" value="intermediate"> Intermediate</label>
+                                        <div>16</div>
+                                        <div>16</div>
+                                        <div>40</div>
+
+                                        <label><input type="radio" name="difficulty" value="expert"> Expert</label>
+                                        <div>16</div>
+                                        <div>30</div>
+                                        <div>2</div>
+
+                                        <label><input type="radio" name="difficulty" value="custom"> Custom</label>
+                                        <input id="inputHeight" style='width: 20rem;' value="20">
+                                        <input id="inputWidth" style='width: 20rem;' value="30">
+                                        <input id="inputMines" style='width: 20rem;' value="145">
+                                    </div>
+
+                                    <div id="startDiv" style="margin-top: 2rem;">
+                                        <button id="newGame" onclick="newGame()">New Game</button>
+                                        <label><input id="question" type="checkbox">Marks (?)</label>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- <div id="debug"></div> -->
+
+    <script src="./script.js"></script>
+</body>
+</html>
