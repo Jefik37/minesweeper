@@ -31,7 +31,7 @@ let mineCount, ended, shuffledCells, lastElementCell, allCellsArray;
 let rows, columns, mines, squaresLeft, won, toggleFlag;
 let scaleFrame = 1;
 let middleMouse;
-let toggleQuestion = false;
+let toggleQuestion = true;
 
 class Timer {
     constructor() {
@@ -586,7 +586,7 @@ function handleEvents(){
 
         cell.html.addEventListener('mouseleave',function(e){
             if(!ended && !cell.clicked){cell.html.src = './assets/tiles/unpressed.png';}
-            else if(cell.variant){cell.html.src = `./assets/tiles/${cell.variant}.png`;}
+            else if(!ended && cell.variant){cell.html.src = `./assets/tiles/${cell.variant}.png`;}
             if(!ended) undoMiddleMousePreview();
         });
     })
@@ -634,7 +634,6 @@ function handleEvents(){
 
 }
 
-
 id_elements.mineCount.addEventListener('mouseup', e => {
     if(e.button === 0){
         toggleFlag = !toggleFlag;
@@ -650,8 +649,16 @@ id_elements.timer.addEventListener('mouseup', e => {
 
 id_elements.smiley.addEventListener("mouseup", function(e){restartGame(currentDifficulty)});
 
-restartGame(difficulties['beginner']);
-
 id_elements.grid.addEventListener('contextmenu', e => e.preventDefault());
 
 window.addEventListener("resize", () => updateFontSize(rows, columns));
+
+for(let i=0; i<10; i++){
+    appendImageToElement(`lcd/${i}`, id_elements.mineCount);
+    id_elements.mineCount.replaceChildren();
+}
+
+appendImageToElement(`lcd/${'-'}`, id_elements.mineCount);
+id_elements.mineCount.replaceChildren();
+
+restartGame(difficulties['beginner']);
