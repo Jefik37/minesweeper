@@ -21,7 +21,7 @@ const id_elements ={
 const difficulties ={
     'beginner' :{rows : 9, columns : 9, mines : 10},
     'intermediate' :{rows : 16, columns : 16, mines : 40},
-    'expert' :{rows : 30, columns : 16, mines : 99},
+    'expert' :{rows : 16, columns : 30, mines : 99},
     'custom' :{},
 }
 
@@ -411,8 +411,8 @@ function generateAllCellsArray(tmpGrid){
 
 function updateFontSize(_rows, _columns){
 
-    const contentWidth  = 16 * _columns + 20;
-    const contentHeight = 16 * _rows + 50;
+    const contentWidth  = 16 * _columns + 25;
+    const contentHeight = 16 * _rows + 70;
 
     const vw = window.innerWidth;
     const vh = window.innerHeight;
@@ -423,7 +423,7 @@ function updateFontSize(_rows, _columns){
     );
     const px = Math.max(0.1, Math.min(scale, 3));
 
-    document.documentElement.style.fontSize = `clamp(1px, ${px}px, 30px)`;
+    document.documentElement.style.fontSize = `${px}px`;
 }
 
 function newGame(){
