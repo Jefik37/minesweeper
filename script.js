@@ -16,7 +16,6 @@ const id_elements ={
     inputMines : document.getElementById('inputMines'),
     question : document.getElementById('question'),
     currentTime : document.getElementById('currentTime'),
-    menu : document.getElementById('menu'),
 }
 
 const difficulties ={
@@ -412,8 +411,11 @@ function generateAllCellsArray(tmpGrid){
 
 function updateFontSize(_rows, _columns){
 
-    // if(id_elements.outers
-
+    if(id_elements.outerMenu.style.display === ''){
+        _rows = 9;
+        _columns = 9;
+    }
+    
     const contentWidth  = 16 * _columns + 25;
     const contentHeight = 16 * _rows + 70;
 
@@ -424,7 +426,7 @@ function updateFontSize(_rows, _columns){
         vw / contentWidth,
         vh / contentHeight
     );
-    let px = Math.max(0.1, Math.min(scale, 3));
+    const px = Math.max(0.1, Math.min(scale, 3));
 
     document.documentElement.style.fontSize = `${px}px`;
 }
@@ -449,6 +451,7 @@ function newGame(){
     toggleQuestion = id_elements.question.checked;
 
     openMenu();
+    console.log(selected.value);
     restartGame(difficulties[selected.value]);
 }
 
