@@ -416,8 +416,8 @@ function updateFontSize(_rows, _columns){
         _columns = 9;
     }
     
-    const contentWidth  = 16 * _columns + 25;
-    const contentHeight = 16 * _rows + 70;
+    const contentWidth  = 16.2 * _columns + 27;
+    const contentHeight = 16.2 * _rows + 67;
 
     const vw = window.innerWidth;
     const vh = window.innerHeight;
@@ -428,7 +428,7 @@ function updateFontSize(_rows, _columns){
     );
     const px = Math.max(0.1, Math.min(scale, 3));
 
-    document.documentElement.style.fontSize = `${px}px`;
+    document.documentElement.style.fontSize = `${scale}px`;
 }
 
 function newGame(){
