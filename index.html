@@ -9,7 +9,7 @@
 </head>
 <body>
 
-    <script src="preload.js"></script>
+    <!-- <script src="preload.js"></script> -->
 
 
     <div id="mainWindow" class="outerBorder">
@@ -59,14 +59,18 @@
                                         <div>2</div>
 
                                         <label><input type="radio" name="difficulty" value="custom"> Custom</label>
-                                        <input id="inputHeight" style='width: 20rem;' value="20">
-                                        <input id="inputWidth" style='width: 20rem;' value="30">
-                                        <input id="inputMines" style='width: 20rem;' value="145">
+                                        <input id="inputHeight" class="largeInput" value="20">
+                                        <input id="inputWidth" class="largeInput" value="30">
+                                        <input id="inputMines" class="largeInput" value="145">
                                     </div>
 
                                     <div id="startDiv" style="margin-top: 2rem;">
-                                        <button id="newGame" onclick="newGame()">New Game</button>
-                                        <label><input id="question" type="checkbox" checked>Marks (?)</label>
+    
+                                        <div id="startButton" onclick="newGame()"><img id="startImg" src="./assets/smiley/sunglasses.png">Start</div>
+                                        
+                                        <label>
+                                            <div class='hiddenDiv'><input id="question" type="checkbox" checked></div>
+                                            Marks (?)</label>
                                     </div>
 
                                 </div>
