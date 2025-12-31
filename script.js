@@ -16,6 +16,7 @@ const id_elements ={
     inputMines : document.getElementById('inputMines'),
     question : document.getElementById('question'),
     currentTime : document.getElementById('currentTime'),
+    menu : document.getElementById('menu'),
 }
 
 const difficulties ={
@@ -323,14 +324,14 @@ function openMenu(){
     // id_elements.outerMenu.style.height = id_elements.outerGrid.offsetHeight + "px";
 
     if(id_elements.outerMenu.style.display === 'none'){
-        updateFontSize(9, 9);
         id_elements.outerMenu.style.display = '';
         id_elements.outerGrid.style.display = 'none';
+        updateFontSize(9, 9);
     }
     else{
-            updateFontSize(rows, columns);
         id_elements.outerGrid.style.display = '';
         id_elements.outerMenu.style.display = 'none';
+        updateFontSize(rows, columns);
     }
 }
 
@@ -411,6 +412,8 @@ function generateAllCellsArray(tmpGrid){
 
 function updateFontSize(_rows, _columns){
 
+    // if(id_elements.outers
+
     const contentWidth  = 16 * _columns + 25;
     const contentHeight = 16 * _rows + 70;
 
@@ -421,7 +424,7 @@ function updateFontSize(_rows, _columns){
         vw / contentWidth,
         vh / contentHeight
     );
-    const px = Math.max(0.1, Math.min(scale, 3));
+    let px = Math.max(0.1, Math.min(scale, 3));
 
     document.documentElement.style.fontSize = `${px}px`;
 }
@@ -446,7 +449,6 @@ function newGame(){
     toggleQuestion = id_elements.question.checked;
 
     openMenu();
-    console.log(selected.value);
     restartGame(difficulties[selected.value]);
 }
 
@@ -657,8 +659,14 @@ for(let i=0; i<10; i++){
     appendImageToElement(`lcd/${i}`, id_elements.mineCount);
     id_elements.mineCount.replaceChildren();
 }
-
 appendImageToElement(`lcd/${'-'}`, id_elements.mineCount);
 id_elements.mineCount.replaceChildren();
+
+for(let i=0; i<10; i++){
+    appendImageToElement(`lcd/${i}`, id_elements.mineCount);
+    id_elements.timer.replaceChildren();
+}
+appendImageToElement(`lcd/${'-'}`, id_elements.mineCount);
+id_elements.timer.replaceChildren();
 
 restartGame(difficulties['beginner']);
