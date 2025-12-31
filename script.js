@@ -428,7 +428,7 @@ function updateFontSize(_rows, _columns){
     );
     const px = Math.max(0.1, Math.min(scale, 3));
 
-    document.documentElement.style.fontSize = `${scale}px`;
+    document.documentElement.style.fontSize = `${px}px`;
 }
 
 function newGame(){
