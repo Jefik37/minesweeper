@@ -492,6 +492,8 @@ function restartGame(difficulty){
 
     updateFontSize(rows, columns);
 
+    id_elements.mineCount.style.boxShadow = "none";
+
     id_elements.grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
     id_elements.grid.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
 
