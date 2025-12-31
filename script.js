@@ -32,6 +32,14 @@ let rows, columns, mines, squaresLeft, won, toggleFlag;
 let scaleFrame = 1;
 let middleMouse;
 let toggleQuestion = true;
+let longPressed = false;
+let lastTap = 0;
+let holdingTime = 0;
+let menuIsOPen = id_elements.outerMenu.style.display === '';
+
+const placeFlagDelay = 100;
+const doubleTapDelay = 300;
+const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
 class Timer {
     constructor() {
@@ -319,64 +327,18 @@ function appendImageToElement(imageName, element){
 
 function openMenu(){
 
-    // id_elements.outerMenu.style.width = id_elements.outerGrid.offsetWidth + "px";
-    // id_elements.outerMenu.style.height = id_elements.outerGrid.offsetHeight + "px";
-
-    if(id_elements.outerMenu.style.display === 'none'){
+    if(!menuIsOPen){
         id_elements.outerMenu.style.display = '';
         id_elements.outerGrid.style.display = 'none';
-        updateFontSize(9, 9);
     }
     else{
         id_elements.outerGrid.style.display = '';
         id_elements.outerMenu.style.display = 'none';
-        updateFontSize(rows, columns);
     }
+    menuIsOPen = !menuIsOPen;
+    updateFontSize();
+
 }
-
-// function createFrame(rows, columns){
-//     id_elements.frame.style.gridTemplateColumns = `repeat(${(columns*scaleFrame)+2}, 1fr)`;
-//     id_elements.frame.style.gridAutoRows = 'min-content';
-
-//     appendImageToElement('border/topLeft', id_elements.frame);
-
-//     appendImageToElement('border/horizontal', id_elements.frame);
-//     lastElementCell.style.gridColumn = `span ${columns*scaleFrame} `;
-//     lastElementCell.onload = function() {
-//         this.style.width = '100%';
-//         this.style.height = this.naturalHeight + 'px';
-//         this.style.objectFit = 'fill';
-//     };
-
-//     appendImageToElement('border/topRight', id_elements.frame);
-//     appendImageToElement('border/vertical', id_elements.frame);
-//     // lastElementCell.style.gridRow = `span ${2*scaleFrame}`;
-//     id_elements.frame.appendChild(id_elements.visor);
-//     // id_elements.visor.style.gridRow = `span ${2*scaleFrame}`;
-//     id_elements.visor.style.gridColumn = `span ${columns*scaleFrame} `;
-//     appendImageToElement('border/vertical', id_elements.frame);
-//     // lastElementCell.style.gridRow = `span ${2*scaleFrame}`;
-//     appendImageToElement('border/TLeft', id_elements.frame);
-//     appendImageToElement('border/horizontal', id_elements.frame);
-//     lastElementCell.style.gridColumn = `span ${columns*scaleFrame} `;
-//     lastElementCell.style.contain = 'size';
-
-//     appendImageToElement('border/TRight', id_elements.frame);
-//     appendImageToElement('border/vertical', id_elements.frame);
-//     lastElementCell.style.gridRow = `span ${rows*scaleFrame}`;
-//     id_elements.frame.appendChild(id_elements.grid);
-//     id_elements.grid.style.gridRow = `span ${rows*scaleFrame} `;
-//     id_elements.grid.style.gridColumn = `span ${columns*scaleFrame} `;
-//     appendImageToElement('border/vertical', id_elements.frame);
-//     lastElementCell.style.gridRow = `span ${rows*scaleFrame}`;
-//     appendImageToElement('border/bottomLeft', id_elements.frame);
-//     appendImageToElement('border/horizontal', id_elements.frame);
-//     lastElementCell.style.gridColumn = `span ${columns*scaleFrame} `;
-//     lastElementCell.style.contain = 'size';
-
-//     appendImageToElement('border/bottomRight', id_elements.frame);
-
-// }
 
 function populateMines(cell){
     shuffledCells = shuffleArray(shuffledCells);
@@ -409,26 +371,24 @@ function generateAllCellsArray(tmpGrid){
     }
 }
 
-function updateFontSize(_rows, _columns){
-
-    if(id_elements.outerMenu.style.display === ''){
-        _rows = 9;
-        _columns = 9;
-    }
+function updateFontSize(){
+    document.documentElement.style.fontSize = `${1}px`;
     
-    const contentWidth  = 16.2 * _columns + 27;
-    const contentHeight = 16.2 * _rows + 67;
-
+    const mainWindow = document.getElementById('mainWindow');
+    const actualWidth = mainWindow.offsetWidth+2;
+    const actualHeight = mainWindow.offsetHeight+2;
+    
     const vw = window.innerWidth;
     const vh = window.innerHeight;
-
-    const scale = Math.min(
-        vw / contentWidth,
-        vh / contentHeight
+    
+    let scale = Math.min(
+        (vw * 0.98) / actualWidth,
+        (vh * 0.98) / actualHeight
     );
-    const px = Math.max(0.1, Math.min(scale, 3));
+    
+    if(!isMobile) scale = Math.min(scale, 3);
 
-    document.documentElement.style.fontSize = `${px}px`;
+    document.documentElement.style.fontSize = `${scale}px`;
 }
 
 function newGame(){
@@ -451,7 +411,6 @@ function newGame(){
     toggleQuestion = id_elements.question.checked;
 
     openMenu();
-    console.log(selected.value);
     restartGame(difficulties[selected.value]);
 }
 
@@ -483,14 +442,13 @@ function restartGame(difficulty){
     ended = false;
     won = false;
     middleMouse = false;
+    longPressed = false;
 
     leftClicks = 0;
     rightClicks = 0;
     mineCount = mines;
     squaresLeft = rows*columns - mines;
     toggleFlag = false;
-
-    updateFontSize(rows, columns);
 
     id_elements.mineCount.style.boxShadow = "none";
 
@@ -516,11 +474,13 @@ function restartGame(difficulty){
         }
     }
 
+    if(menuIsOPen) openMenu(); 
+
     generateAllCellsArray(tmpGrid);
     handleEvents();
     updateLCD(id_elements.mineCount, mineCount);
     updateLCD(id_elements.timer, 0);
-    // createFrame(rows, columns);
+    updateFontSize();
 }
 
 function useFlag(cell){
@@ -559,54 +519,68 @@ function useFlag(cell){
 
 function handleEvents(){
     allCellsArray.forEach(function(cell){
-        cell.html.addEventListener('mousedown',function(e){
-            if(!ended && (e.button === 1 || e.buttons === 3)) {
-                middleMouse = true;
-                middleMousePreview(cell);
-            }
-            if(!ended && !cell.clicked){
-                if((e.buttons === 2 || (e.button === 0 && toggleFlag))){
-                    if(!middleMouse) useFlag(cell);
-                }
-                else if(e.buttons === 1 && cell.variant != 'flag'){
-                    id_elements.smiley.src = './assets/smiley/wonder.png';
-                    cell.html.src = './assets/tiles/empty.png';
-                }
-            }
+        cell.html.addEventListener('pointerdown',function(e){
+            holdingTime = Date.now();
 
+            if(e.button === 0) longPressed = false;
+
+            if(!longPressed){
+                if(!ended && (e.button === 1 || e.buttons === 3)){
+                    middleMouse = true;
+                    middleMousePreview(cell);
+                }
+                if(!ended && !cell.clicked){
+                    if((e.buttons === 2 || (e.button === 0 && toggleFlag))){
+                        if(!middleMouse) useFlag(cell);
+                    }
+                    else if(e.buttons === 1 && cell.variant != 'flag'){
+                        id_elements.smiley.src = './assets/smiley/wonder.png';
+                        cell.html.src = './assets/tiles/empty.png';
+                    }
+                }
+            }
         });
         
-        cell.html.addEventListener('mouseup', e => {
-            if(e.button === 0 && !middleMouse)clickCell(cell.row, cell.column, e.button, true);
-            if(middleMouse && e.buttons === 0){
-                middleMouse = false;
-                undoMiddleMousePreview();
-                if(cell.clicked) middleMouseMode(cell.row, cell.column)};
+        cell.html.addEventListener('pointerup', e => {
+            const now = Date.now();
+            if(now - holdingTime > placeFlagDelay && e.button === 0 && !cell.clicked && !ended){
+                useFlag(cell);
+                longPressed = true;
+            }
+            else{
+                if(e.button === 0 && !middleMouse)clickCell(cell.row, cell.column, e.button, true);
+                if(!ended && ((middleMouse && e.buttons === 0) || (now-lastTap < doubleTapDelay))){
+                    middleMouse = false;
+                    undoMiddleMousePreview();
+                    if(cell.clicked) middleMouseMode(cell.row, cell.column)
+                };
+            }
+
+            lastTap = now;
         });
 
         cell.html.addEventListener('mouseover',function(e){
+            holdingTime = Date.now();
             if(!ended && e.buttons === 1 && !cell.clicked && cell.variant != 'flag' && !toggleFlag){
                 cell.html.src = cell.variant? `./assets/tiles/${cell.variant}_pressed.png` :  './assets/tiles/empty.png';
             }
             if(!ended && middleMouse) middleMousePreview(cell);
         });
 
-        cell.html.addEventListener('mouseleave',function(e){
+        cell.html.addEventListener('pointerleave',function(e){
             if(!ended && !cell.clicked){cell.html.src = './assets/tiles/unpressed.png';}
             else if(!ended && cell.variant){cell.html.src = `./assets/tiles/${cell.variant}.png`;}
             if(!ended) undoMiddleMousePreview();
         });
     })
 
-    id_elements.smiley.addEventListener('mousedown', e => {if(e.button==0){id_elements.smiley.src = './assets/smiley/pressed.png';}});
-
-    id_elements.smiley.addEventListener('mousedown', e => {
-        if(e.button == 0){
+    id_elements.smiley.addEventListener('pointerdown', e => {
+        if(e.button === 0){
             id_elements.smiley.src = './assets/smiley/pressed.png';
         }
     });
 
-    id_elements.smiley.addEventListener('mouseleave', e => {
+    id_elements.smiley.addEventListener('pointerleave', e => {
         if(e.buttons === 1){
             if(squaresLeft===0){
                 id_elements.smiley.src = './assets/smiley/sunglasses.png';
@@ -622,7 +596,8 @@ function handleEvents(){
 
     id_elements.smiley.ondragstart = () => false;
 
-    document.addEventListener('mouseup', (e) => {
+    document.addEventListener('pointerup', (e) => {
+        longPressed = false;
         if(squaresLeft===0){
             id_elements.smiley.src = './assets/smiley/sunglasses.png';
         }
@@ -641,24 +616,26 @@ function handleEvents(){
 
 }
 
-id_elements.mineCount.addEventListener('mouseup', e => {
+id_elements.mineCount.addEventListener('pointerup', e => {
     if(e.button === 0){
         toggleFlag = !toggleFlag;
         id_elements.mineCount.style.boxShadow = toggleFlag? "2rem 2rem 0rem rgba(255, 0, 0, 0.5)" : "none";
     }
 });
 
-id_elements.timer.addEventListener('mouseup', e => {
+id_elements.timer.addEventListener('pointerup', e => {
     if(e.button === 0){
         openMenu();
     }
 });
 
-id_elements.smiley.addEventListener("mouseup", function(e){restartGame(currentDifficulty)});
+id_elements.smiley.addEventListener("pointerup", () => {
+    menuIsOPen ? openMenu() : restartGame(currentDifficulty);
+});
 
 id_elements.grid.addEventListener('contextmenu', e => e.preventDefault());
 
-window.addEventListener("resize", () => updateFontSize(rows, columns));
+window.addEventListener("resize", () => updateFontSize());
 
 for(let i=0; i<10; i++){
     appendImageToElement(`lcd/${i}`, id_elements.mineCount);
