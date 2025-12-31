@@ -21,7 +21,7 @@ body{
 }
 
 #mainWindow{
-    /* transform: scale(2); */
+    touch-action: manipulation;
 }
 
 #grid{
