@@ -45,36 +45,6 @@ body{
     align-items: center;
 }
 
-#menu{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 2rem;
-    font-size: 6rem;
-    width: 140rem;
-    height: 140rem;
-}
-
-#difficulties {
-    display: grid;
-    grid-template-columns: repeat(4, auto);
-    grid-template-rows: repeat(4, auto);
-    row-gap: 3rem;
-    column-gap: 8rem;
-}
-
-
-#difficulties label {
-  font-weight: bold;
-}
-
-#startDiv {
-  display: flex;
-  justify-content: space-between;
-  padding: 0rem;
-  width: 95%;
-}
-
 .sprite{
     user-select: none;
 }
@@ -141,3 +111,97 @@ body{
 .cell{
     cursor: pointer;
 }
+
+.hiddenDiv{
+    width: 0;
+    height: 0;
+}
+
+/* Custom menu buttons */
+#menu{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4rem;
+    font-size: 6rem;
+    width: 136rem;
+    height: 136rem;
+}
+
+#difficulties {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    grid-template-rows: repeat(4, auto);
+    row-gap: 3rem;
+    column-gap: 8rem;
+    margin-bottom: 8rem;
+}
+
+
+#difficulties label {
+  font-weight: bold;
+}
+
+#startDiv {
+  display: flex;
+  justify-content: space-between;
+  width: 100%; 
+}
+
+#startImg{
+    width: 8rem;
+    height: 8rem;
+}
+
+input[type="radio"], 
+input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+label {
+    padding-right: 4rem;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 2rem;
+    /* padding: 5rem; */
+    user-select: none;
+}
+
+label::before {
+    content: "";
+    display: inline-block;
+    width: 8rem;
+    height: 8rem;
+    background-image: url('./assets/tiles/unpressed.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+label:has(input:is([type="radio"], [type="checkbox"]):checked)::before {
+    background-image: url('./assets/tiles/flag.png');
+}
+
+.largeInput {
+    width: 20rem;
+    height: rem;
+    font-size: 6rem;
+    padding: 0.5rem;
+    border: 0;
+    box-sizing: border-box;
+    border-radius: 1rem;
+}
+
+#startButton{
+    display: flex;
+    gap: 2rem;
+    cursor: pointer;
+    font-weight: bold;
+    padding-right: 4rem;
+}
+
+/* Custom menu buttons */
