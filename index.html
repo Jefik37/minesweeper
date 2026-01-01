@@ -9,7 +9,7 @@
 </head>
 <body>
 
-    <!-- <script src="preload.js"></script> -->
+    <script src="./preload.js"></script>
 
 
     <div id="mainWindow" class="outerBorder">
@@ -35,7 +35,10 @@
                             <div id="menuBorder" class="innerBorder centeredDivs menuBorder">
                                 <div id="menu" class="centeredDivs">
                                     
-                                    <div id="currentTimeDiv">Time: <b id="currentTime"></b>s</div>
+                                    <div id="stats">
+                                        <div id="currentTimeDiv">Time: <b id="currentTime"></b>s</div>
+                                        <span id= "totalClicksDiv">Total Clicks:  <b id="totalClicks">0</b></span>
+                                    </div>
 
                                     <div id="difficulties">
                                         <div></div>
@@ -84,10 +87,6 @@
             </div>
         </div>
     </div>
-
-
-
-    <!-- <div id="debug"></div> -->
 
     <script src="./script.js"></script>
 </body>
