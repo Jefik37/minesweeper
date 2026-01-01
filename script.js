@@ -16,6 +16,8 @@ const id_elements ={
     inputMines : document.getElementById('inputMines'),
     question : document.getElementById('question'),
     currentTime : document.getElementById('currentTime'),
+    totalClicks : document.getElementById('totalClicks'),
+    totalClicksDiv : document.getElementById('totalClicksDiv'),
 }
 
 const difficulties ={
@@ -26,7 +28,7 @@ const difficulties ={
 }
 
 
-let grid, leftClicks, currentDifficulty, rightClicks, updateTimerInterval;
+let grid, leftClicks, middleClicks, rightClicks, currentDifficulty, updateTimerInterval;
 let mineCount, ended, shuffledCells, lastElementCell, allCellsArray;
 let rows, columns, mines, squaresLeft, won, toggleFlag;
 let scaleFrame = 1;
@@ -213,6 +215,8 @@ function clickCell(row, column, mouseButton, trueClick){
     if(squaresLeft === 0 && mineCount >= 0){
         endedGame(cell);
     }
+    
+    updateCLicksDiv();
 }
 
 async function calculateEmptySpaces(row, column){
@@ -251,6 +255,7 @@ function calculateNumbers(){
 }
 
 function middleMouseMode(row, column){
+    middleClicks++;
     const cell = grid[row][column];
     let possibleBombs = 0;
 
@@ -267,7 +272,6 @@ function middleMouseMode(row, column){
     }
 
     if(possibleBombs === cell.text){
-        leftClicks++;
         for(const [di, dj] of offsets){
             const ni = row + di;
             const nj = column + dj;
@@ -276,6 +280,8 @@ function middleMouseMode(row, column){
             }
         }
     }
+
+    updateCLicksDiv();
 }
 
 function middleMousePreview(cell){
@@ -328,10 +334,12 @@ function appendImageToElement(imageName, element){
 function openMenu(){
 
     if(!menuIsOPen){
+        timer.pause();
         id_elements.outerMenu.style.display = '';
         id_elements.outerGrid.style.display = 'none';
     }
     else{
+        timer.start();
         id_elements.outerGrid.style.display = '';
         id_elements.outerMenu.style.display = 'none';
     }
@@ -369,6 +377,11 @@ function generateAllCellsArray(tmpGrid){
             allCellsArray.push(grid[i][j]);
         }
     }
+}
+
+function updateCLicksDiv(){
+    id_elements.totalClicksDiv.title = `Left: ${leftClicks}\nRight: ${rightClicks}\n Chords: ${middleClicks}`;
+    id_elements.totalClicks.textContent = leftClicks+rightClicks+middleClicks;
 }
 
 function updateFontSize(){
@@ -445,6 +458,7 @@ function restartGame(difficulty){
     longPressed = false;
 
     leftClicks = 0;
+    middleClicks = 0;
     rightClicks = 0;
     mineCount = mines;
     squaresLeft = rows*columns - mines;
@@ -481,6 +495,7 @@ function restartGame(difficulty){
     updateLCD(id_elements.mineCount, mineCount);
     updateLCD(id_elements.timer, 0);
     updateFontSize();
+    updateCLicksDiv();
 }
 
 function useFlag(cell){
@@ -574,30 +589,16 @@ function handleEvents(){
         });
     })
 
-    id_elements.smiley.addEventListener('pointerdown', e => {
-        if(e.button === 0){
-            id_elements.smiley.src = './assets/smiley/pressed.png';
-        }
-    });
+}
 
-    id_elements.smiley.addEventListener('pointerleave', e => {
-        if(e.buttons === 1){
-            if(squaresLeft===0){
-                id_elements.smiley.src = './assets/smiley/sunglasses.png';
-            }
-            else if(ended){
-                id_elements.smiley.src = './assets/smiley/dead.png';
-            }
-            else{
-                id_elements.smiley.src = './assets/smiley/smiley.png';
-            } 
-        }
-    });
+id_elements.smiley.addEventListener('pointerdown', e => {
+    if(e.button === 0){
+        id_elements.smiley.src = './assets/smiley/pressed.png';
+    }
+});
 
-    id_elements.smiley.ondragstart = () => false;
-
-    document.addEventListener('pointerup', (e) => {
-        longPressed = false;
+id_elements.smiley.addEventListener('pointerleave', e => {
+    if(e.buttons === 1){
         if(squaresLeft===0){
             id_elements.smiley.src = './assets/smiley/sunglasses.png';
         }
@@ -607,14 +608,28 @@ function handleEvents(){
         else{
             id_elements.smiley.src = './assets/smiley/smiley.png';
         } 
+    }
+});
 
-        if(middleMouse && e.buttons === 0){
-            middleMouse = false;
-            undoMiddleMousePreview();
-        }
-    });
+id_elements.smiley.ondragstart = () => false;
 
-}
+document.addEventListener('pointerup', (e) => {
+    longPressed = false;
+    if(squaresLeft===0){
+        id_elements.smiley.src = './assets/smiley/sunglasses.png';
+    }
+    else if(ended){
+        id_elements.smiley.src = './assets/smiley/dead.png';
+    }
+    else{
+        id_elements.smiley.src = './assets/smiley/smiley.png';
+    } 
+
+    if(middleMouse && e.buttons === 0){
+        middleMouse = false;
+        undoMiddleMousePreview();
+    }
+});
 
 id_elements.mineCount.addEventListener('pointerup', e => {
     if(e.button === 0){
@@ -637,18 +652,11 @@ id_elements.grid.addEventListener('contextmenu', e => e.preventDefault());
 
 window.addEventListener("resize", () => updateFontSize());
 
-for(let i=0; i<10; i++){
-    appendImageToElement(`lcd/${i}`, id_elements.mineCount);
-    id_elements.mineCount.replaceChildren();
-}
-appendImageToElement(`lcd/${'-'}`, id_elements.mineCount);
-id_elements.mineCount.replaceChildren();
-
-for(let i=0; i<10; i++){
-    appendImageToElement(`lcd/${i}`, id_elements.mineCount);
-    id_elements.timer.replaceChildren();
-}
-appendImageToElement(`lcd/${'-'}`, id_elements.mineCount);
-id_elements.timer.replaceChildren();
+document.addEventListener('keydown', (e) => {
+    if(e.key === 'r' || e.key === 'R') {
+        menuIsOPen = false;
+        restartGame(currentDifficulty);
+    }
+});
 
 restartGame(difficulties['beginner']);
