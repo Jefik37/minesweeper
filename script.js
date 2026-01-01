@@ -340,7 +340,7 @@ function openMenu(){
         id_elements.outerGrid.style.display = 'none';
     }
     else{
-        timer.start();
+        if(!ended) timer.start();
         id_elements.outerGrid.style.display = '';
         id_elements.outerMenu.style.display = 'none';
     }
