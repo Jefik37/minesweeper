@@ -531,6 +531,7 @@ function useFlag(cell){
     }
     cell.html.src = `./assets/tiles/${fileName}.png`;
     updateLCD(id_elements.mineCount, mineCount);
+    updateCLicksDiv();
 }
 
 function handleEvents(){
