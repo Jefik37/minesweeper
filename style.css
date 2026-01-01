@@ -37,10 +37,6 @@ body{
     align-items: center;
 }
 
-.sprite{
-    user-select: none;
-}
-
 #currentTimeDiv{
     margin-bottom: 10rem;
 }
@@ -89,6 +85,7 @@ body{
     image-rendering: crisp-edges;
     image-rendering: -moz-crisp-edges;
     image-rendering: pixelated;
+    user-select: none;
 }
 
 .cell{
@@ -130,9 +127,19 @@ body{
   width: 100%; 
 }
 
+#startButton{
+    font-size: 12rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    cursor: pointer;
+    font-weight: bold;
+    padding-right: 4rem;
+}
+
 #startImg{
-    width: 8rem;
-    height: 8rem;
+    width: 18rem;
+    height: 18rem;
 }
 
 input[type="radio"], 
@@ -177,12 +184,4 @@ label:has(input:is([type="radio"], [type="checkbox"]):checked)::before {
     border: 0;
     box-sizing: border-box;
     border-radius: 1rem;
-}
-
-#startButton{
-    display: flex;
-    gap: 2rem;
-    cursor: pointer;
-    font-weight: bold;
-    padding-right: 4rem;
 }
