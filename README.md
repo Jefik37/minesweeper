@@ -19,5 +19,5 @@ Chord:
 - Double left click
   
 Restarting:  
-- Smiley Face
+- Smiley
 - R
