@@ -380,7 +380,7 @@ function generateAllCellsArray(tmpGrid){
 }
 
 function updateCLicksDiv(){
-    id_elements.totalClicksDiv.title = `Left: ${leftClicks}\nRight: ${rightClicks}\n Chords: ${middleClicks}`;
+    id_elements.totalClicksDiv.title = `Left: ${leftClicks}\nRight: ${rightClicks}\nChords: ${middleClicks}`;
     id_elements.totalClicks.textContent = leftClicks+rightClicks+middleClicks;
 }
 
