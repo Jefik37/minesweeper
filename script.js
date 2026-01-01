@@ -131,6 +131,7 @@ function randomFloat(){
 }
 
 function endedGame(currentCell){
+    updateCLicksDiv();
     timer.pause();
     ended = true;
 
