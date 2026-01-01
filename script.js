@@ -142,7 +142,7 @@ function endedGame(currentCell){
             if(cell.text === 'mine'){
                 cell.html.src = './assets/tiles/flag.png';
                 mineCount = 0;
-                updateLCD(id_elements.mineCount, mineCount);
+                updateMineCountLCD(id_elements.mineCount, mineCount);
             }
         });
         
@@ -175,7 +175,7 @@ function clickCell(row, column, mouseButton, trueClick){
         populateMines(cell);
         calculateNumbers();
         updateTimerInterval = setInterval(() => {
-            updateLCD(id_elements.timer, timer.getSeconds());
+            id_elements.timer.replaceChildren(makeLCDDiv(timer.getSeconds()));
         }, 1000);
 
         setInterval(() => id_elements.currentTime.textContent = timer.getTime().toFixed(2), 10);
@@ -211,7 +211,8 @@ function clickCell(row, column, mouseButton, trueClick){
             cell.html.src = `./assets/tiles/${cell.text}.png`;         
         }
     }
-    updateLCD(id_elements.mineCount, mineCount);
+    
+    id_elements.mineCount.replaceChildren(makeLCDDiv(mineCount));
     if(leftClicks === 1 && !ended) timer.start();
     if(squaresLeft === 0 && mineCount >= 0){
         endedGame(cell);
@@ -313,23 +314,18 @@ function undoMiddleMousePreview(){
     }
 }
 
-function updateLCD(element, newValue){
-    element.replaceChildren();
-    if(newValue>999) newValue = 999;
-    for(let digit of String(newValue).padStart(3,'0')){
-        appendImageToElement(`lcd/${digit}`, element);
-    }
-}
+function makeLCDDiv(number){
+    let newDiv = document.createElement('div');
 
-function appendImageToElement(imageName, element){
-    const cell = document.createElement('img');
-    cell.className = 'sprite';
-    cell.src = `./assets/${imageName}.png`;
-    cell.ondragstart = () => false;
-    cell.style.width = '13rem';
-    // cell.style.cursor = 'default';
-    element.appendChild(cell);
-    lastElementCell = cell;
+    for(let digit of String(number).padStart(3,'0')){
+        const newDigit = document.createElement('img');
+        newDigit.className = 'sprite';
+        newDigit.src = `./assets/lcd/${digit}.png`;
+        newDigit.ondragstart = () => false;
+        newDigit.style.width = '13rem';
+        newDiv.appendChild(newDigit);
+    }
+    return newDiv;
 }
 
 function openMenu(){
@@ -493,8 +489,8 @@ function restartGame(difficulty){
 
     generateAllCellsArray(tmpGrid);
     handleEvents();
-    updateLCD(id_elements.mineCount, mineCount);
-    updateLCD(id_elements.timer, 0);
+    id_elements.mineCount.replaceChildren(makeLCDDiv(mineCount));
+    id_elements.timer.replaceChildren(makeLCDDiv(0));
     updateFontSize();
     updateCLicksDiv();
 }
@@ -530,7 +526,7 @@ function useFlag(cell){
         }
     }
     cell.html.src = `./assets/tiles/${fileName}.png`;
-    updateLCD(id_elements.mineCount, mineCount);
+    id_elements.mineCount.replaceChildren(makeLCDDiv(mineCount));
     updateCLicksDiv();
 }
 
