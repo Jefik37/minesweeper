@@ -142,7 +142,7 @@ function endedGame(currentCell){
             if(cell.text === 'mine'){
                 cell.html.src = './assets/tiles/flag.png';
                 mineCount = 0;
-                updateMineCountLCD(id_elements.mineCount, mineCount);
+                id_elements.mineCount.replaceChildren(makeLCDDiv(0));
             }
         });
         
