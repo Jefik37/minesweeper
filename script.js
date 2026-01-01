@@ -142,7 +142,7 @@ function endedGame(currentCell){
             if(cell.text === 'mine'){
                 cell.html.src = './assets/tiles/flag.png';
                 mineCount = 0;
-                id_elements.mineCount.replaceChildren(makeLCDDiv(0));
+                makeLCDDiv(id_elements.mineCount, 0);
             }
         });
         
@@ -175,7 +175,7 @@ function clickCell(row, column, mouseButton, trueClick){
         populateMines(cell);
         calculateNumbers();
         updateTimerInterval = setInterval(() => {
-            id_elements.timer.replaceChildren(makeLCDDiv(timer.getSeconds()));
+            makeLCDDiv(id_elements.timer, timer.getSeconds());
         }, 1000);
 
         setInterval(() => id_elements.currentTime.textContent = timer.getTime().toFixed(2), 10);
@@ -212,7 +212,7 @@ function clickCell(row, column, mouseButton, trueClick){
         }
     }
     
-    id_elements.mineCount.replaceChildren(makeLCDDiv(mineCount));
+    makeLCDDiv(id_elements.mineCount, mineCount);
     if(leftClicks === 1 && !ended) timer.start();
     if(squaresLeft === 0 && mineCount >= 0){
         endedGame(cell);
@@ -314,7 +314,7 @@ function undoMiddleMousePreview(){
     }
 }
 
-function makeLCDDiv(number){
+function makeLCDDiv(element, number){
     let newDiv = document.createElement('div');
 
     for(let digit of String(number).padStart(3,'0')){
@@ -325,7 +325,7 @@ function makeLCDDiv(number){
         newDigit.style.width = '13rem';
         newDiv.appendChild(newDigit);
     }
-    return newDiv;
+    element.replaceChildren(newDiv);
 }
 
 function openMenu(){
@@ -489,8 +489,8 @@ function restartGame(difficulty){
 
     generateAllCellsArray(tmpGrid);
     handleEvents();
-    id_elements.mineCount.replaceChildren(makeLCDDiv(mineCount));
-    id_elements.timer.replaceChildren(makeLCDDiv(0));
+    makeLCDDiv(id_elements.mineCount, mineCount);
+    makeLCDDiv(id_elements.timer, 0);
     updateFontSize();
     updateCLicksDiv();
 }
@@ -526,7 +526,7 @@ function useFlag(cell){
         }
     }
     cell.html.src = `./assets/tiles/${fileName}.png`;
-    id_elements.mineCount.replaceChildren(makeLCDDiv(mineCount));
+    makeLCDDiv(id_elements.mineCount, mineCount);
     updateCLicksDiv();
 }
 
