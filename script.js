@@ -153,7 +153,7 @@ function endedGame(currentCell){
             if(cell === currentCell){
                 cell.html.src = './assets/tiles/mine_red.png';
             }
-            else{
+            else if(cell.variant != 'flag'){
                 cell.html.src = './assets/tiles/mine.png';
             }
         }
