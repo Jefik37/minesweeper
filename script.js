@@ -37,7 +37,7 @@ let lastTap = 0;
 let holdingTime = 0;
 let menuIsOPen = id_elements.outerMenu.style.display === '';
 
-const placeFlagDelay = 100;
+const placeFlagDelay = 120;
 const doubleTapDelay = 300;
 const isMobile = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
 
