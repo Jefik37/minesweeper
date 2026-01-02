@@ -176,7 +176,7 @@ function clickCell(row, column, mouseButton, trueClick){
         calculateNumbers();
         updateTimerInterval = setInterval(() => {
             makeLCDDiv(id_elements.timer, timer.getSeconds());
-        }, 1000);
+        }, 500);
 
         setInterval(() => id_elements.currentTime.textContent = timer.getTime().toFixed(2), 10);
     }
