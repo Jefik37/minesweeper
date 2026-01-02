@@ -6,7 +6,7 @@ Minesweeper clone made with JavaScript
 ## Commands and Options
 
 Opening the menu:  
-- click the timer display on the right
+- Click the timer display on the right
   
 Placing flag:  
 - Right CLick
