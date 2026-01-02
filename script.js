@@ -60,7 +60,7 @@ class Timer {
         const now = performance.now();
         
         if (this.pausedTime) {
-            // retomando após pausa
+            // retomando apÃ³s pausa
             this.totalPaused += now - this.pausedTime;
             this.pausedTime = 0;
         } else {
@@ -136,11 +136,11 @@ function endedGame(currentCell){
     ended = true;
 
     if(squaresLeft === 0){
-        id_elements.smiley.src = './assets/smiley/sunglasses.png';
+        id_elements.smiley.src = window.smileyCache['sunglasses'] || './assets/smiley/sunglasses.png';
         allCellsArray.forEach(cell => {
             cell.html.style.cursor = 'auto';
             if(cell.text === 'mine'){
-                cell.html.src = './assets/tiles/flag.png';
+                cell.html.src = window.tilesCache['flag'] || './assets/tiles/flag.png';
                 mineCount = 0;
                 makeLCDDiv(id_elements.mineCount, 0);
             }
@@ -149,19 +149,19 @@ function endedGame(currentCell){
         return;
     }
 
-    id_elements.smiley.src = './assets/smiley/dead.png'
+    id_elements.smiley.src = window.smileyCache['dead'] || './assets/smiley/dead.png'
     allCellsArray.forEach(cell => {
         cell.html.style.cursor = 'auto';
         if(cell.text === 'mine'){
             if(cell === currentCell){
-                cell.html.src = './assets/tiles/mine_red.png';
+                cell.html.src = window.tilesCache['mine_red'] || './assets/tiles/mine_red.png';
             }
             else if(cell.variant != 'flag'){
-                cell.html.src = './assets/tiles/mine.png';
+                cell.html.src = window.tilesCache['mine'] || './assets/tiles/mine.png';
             }
         }
         else if(cell.variant === 'flag'){
-            cell.html.src = './assets/tiles/mine_x.png';
+            cell.html.src = window.tilesCache['mine_x'] || './assets/tiles/mine_x.png';
         }
     });
     
@@ -197,7 +197,7 @@ function clickCell(row, column, mouseButton, trueClick){
             fileName = cell.text;
             if(cell.text === 'mine'){
                 ended = true;
-                id_elements.smiley.src = './assets/smiley/dead.png'
+                id_elements.smiley.src = window.smileyCache['dead'] || './assets/smiley/dead.png'
                 endedGame(cell);
                 return;
             }
@@ -208,7 +208,7 @@ function clickCell(row, column, mouseButton, trueClick){
             }
 
             calculateEmptySpaces(row, column, 0, false);
-            cell.html.src = `./assets/tiles/${cell.text}.png`;         
+            cell.html.src = window.tilesCache[cell.text] || `./assets/tiles/${cell.text}.png`;         
         }
     }
     
@@ -299,7 +299,7 @@ function middleMousePreview(cell){
         if(ni >= 0 && ni < rows && nj >= 0 && nj < columns){
             
             if(!grid[ni][nj].clicked && grid[ni][nj].variant !== 'flag'){
-                grid[ni][nj].html.src = grid[ni][nj].variant ? `./assets/tiles/${grid[ni][nj].variant}_pressed.png` : './assets/tiles/empty.png';
+                grid[ni][nj].html.src = grid[ni][nj].variant ? (window.tilesCache[`${grid[ni][nj].variant}_pressed`] || `./assets/tiles/${grid[ni][nj].variant}_pressed.png`) : (window.tilesCache['empty'] || './assets/tiles/empty.png');
             }
         }
     }
@@ -309,7 +309,7 @@ function undoMiddleMousePreview(){
 
     for(element of allCellsArray){
         if (!element.clicked){
-            element.html.src = element.variant ? `./assets/tiles/${element.variant}.png` : `./assets/tiles/unpressed.png`
+            element.html.src = element.variant ? (window.tilesCache[element.variant] || `./assets/tiles/${element.variant}.png`) : (window.tilesCache['unpressed'] || `./assets/tiles/unpressed.png`)
         }
     }
 }
@@ -320,7 +320,7 @@ function makeLCDDiv(element, number){
     for(let digit of String(number).padStart(3,'0')){
         const newDigit = document.createElement('img');
         newDigit.className = 'sprite';
-        newDigit.src = `./assets/lcd/${digit}.png`;
+        newDigit.src = window.lcdCache?.[digit] || `./assets/lcd/${digit}.png`;
         newDigit.ondragstart = () => false;
         newDigit.style.width = '13rem';
         newDiv.appendChild(newDigit);
@@ -469,7 +469,7 @@ function restartGame(difficulty){
     id_elements.grid.replaceChildren();difficulty
     const tmpGrid = [];
 
-    id_elements.smiley.src = './assets/smiley/smiley.png'
+    id_elements.smiley.src = window.smileyCache['smiley'] || './assets/smiley/smiley.png'
 
     for(let i = 0; i < rows; i++){
         tmpGrid[i] = [];
@@ -477,7 +477,7 @@ function restartGame(difficulty){
             const cell = document.createElement('img');
             cell.style.width = '16rem';
             cell.className = 'cell sprite';
-            cell.src = './assets/tiles/unpressed.png';
+            cell.src = window.tilesCache['unpressed'] || './assets/tiles/unpressed.png';
             tmpGrid[i][j] = cell;
             cell.ondragstart = () => false;
             id_elements.grid.appendChild(cell);
@@ -525,7 +525,7 @@ function useFlag(cell){
             fileName = cell.variant;
         }
     }
-    cell.html.src = `./assets/tiles/${fileName}.png`;
+    cell.html.src = window.tilesCache[fileName] || `./assets/tiles/${fileName}.png`;
     makeLCDDiv(id_elements.mineCount, mineCount);
     updateCLicksDiv();
 }
@@ -547,8 +547,8 @@ function handleEvents(){
                         if(!middleMouse) useFlag(cell);
                     }
                     else if(e.buttons === 1 && cell.variant != 'flag'){
-                        id_elements.smiley.src = './assets/smiley/wonder.png';
-                        cell.html.src = './assets/tiles/empty.png';
+                        id_elements.smiley.src = window.smileyCache['wonder'] || './assets/smiley/wonder.png';
+                        cell.html.src = window.tilesCache['empty'] || './assets/tiles/empty.png';
                     }
                 }
             }
@@ -575,14 +575,14 @@ function handleEvents(){
         cell.html.addEventListener('mouseover',function(e){
             holdingTime = Date.now();
             if(!ended && e.buttons === 1 && !cell.clicked && cell.variant != 'flag' && !toggleFlag){
-                cell.html.src = cell.variant? `./assets/tiles/${cell.variant}_pressed.png` :  './assets/tiles/empty.png';
+                cell.html.src = cell.variant? (window.tilesCache[`${cell.variant}_pressed`] || `./assets/tiles/${cell.variant}_pressed.png`) :  (window.tilesCache['empty'] || './assets/tiles/empty.png');
             }
             if(!ended && middleMouse) middleMousePreview(cell);
         });
 
         cell.html.addEventListener('pointerleave',function(e){
-            if(!ended && !cell.clicked){cell.html.src = './assets/tiles/unpressed.png';}
-            else if(!ended && cell.variant){cell.html.src = `./assets/tiles/${cell.variant}.png`;}
+            if(!ended && !cell.clicked) cell.html.src = window.tilesCache['unpressed'] || './assets/tiles/unpressed.png';
+            else if(!ended && cell.variant){cell.html.src = window.tilesCache[cell.variant] || `./assets/tiles/${cell.variant}.png`;}
             if(!ended) undoMiddleMousePreview();
         });
     })
@@ -591,20 +591,20 @@ function handleEvents(){
 
 id_elements.smiley.addEventListener('pointerdown', e => {
     if(e.button === 0){
-        id_elements.smiley.src = './assets/smiley/pressed.png';
+        id_elements.smiley.src = window.smileyCache['pressed'] || './assets/smiley/pressed.png';
     }
 });
 
 id_elements.smiley.addEventListener('pointerleave', e => {
     if(e.buttons === 1){
         if(squaresLeft===0){
-            id_elements.smiley.src = './assets/smiley/sunglasses.png';
+            id_elements.smiley.src = window.smileyCache['sunglasses'] || './assets/smiley/sunglasses.png';
         }
         else if(ended){
-            id_elements.smiley.src = './assets/smiley/dead.png';
+            id_elements.smiley.src = window.smileyCache['dead'] || './assets/smiley/dead.png';
         }
         else{
-            id_elements.smiley.src = './assets/smiley/smiley.png';
+            id_elements.smiley.src = window.smileyCache['smiley'] || './assets/smiley/smiley.png';
         } 
     }
 });
@@ -614,13 +614,13 @@ id_elements.smiley.ondragstart = () => false;
 document.addEventListener('pointerup', (e) => {
     longPressed = false;
     if(squaresLeft===0){
-        id_elements.smiley.src = './assets/smiley/sunglasses.png';
+        id_elements.smiley.src = window.smileyCache['sunglasses'] || './assets/smiley/sunglasses.png';
     }
     else if(ended){
-        id_elements.smiley.src = './assets/smiley/dead.png';
+        id_elements.smiley.src = window.smileyCache['dead'] || './assets/smiley/dead.png';
     }
     else{
-        id_elements.smiley.src = './assets/smiley/smiley.png';
+        id_elements.smiley.src = window.smileyCache['smiley'] || './assets/smiley/smiley.png';
     } 
 
     if(middleMouse && e.buttons === 0){
