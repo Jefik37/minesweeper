@@ -40,9 +40,11 @@ body{
 }
 
 #grid{
+    width: 144rem;
+    height: 144rem;
     display: grid;
     grid-auto-rows: 1fr;
-    background: black;
+    background-color: #c0c0c0;
     overflow: hidden;
 }
 
