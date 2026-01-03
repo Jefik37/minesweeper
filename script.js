@@ -655,6 +655,11 @@ document.addEventListener('keydown', (e) => {
         menuIsOPen = false;
         restartGame(currentDifficulty);
     }
+
+    if(e.key === 'Escape') {
+        openMenu();
+    }
 });
+
 
 restartGame(difficulties['beginner']);
