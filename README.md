@@ -7,6 +7,7 @@ Minesweeper clone made with JavaScript
 
 Opening the menu:  
 - Click the timer display on the right
+- Esc
   
 Placing flag:  
 - Right CLick
