@@ -1,7 +1,8 @@
 # minesweeper
 
 <img height="400" alt="image" src="https://github.com/user-attachments/assets/09b8d5a7-5870-45c2-9909-0d314a1794e2" />
-<img height="400" alt="image" src="https://github.com/user-attachments/assets/c35b509e-17a2-4f9a-8a5d-985e2d21be0e" />
+<img height="400" alt="image" src="https://github.com/user-attachments/assets/84b4cedc-5fbc-4ac0-9e05-89d53ae56bcc" />
+
 
 
 ## Commands and Options
