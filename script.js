@@ -1,32 +1,31 @@
-const id_elements ={
-    grid : document.getElementById('grid'),
-    mineCount : document.getElementById('mineCount'),
-    leftClicks : document.getElementById('leftClicks'),
-    rightClicks : document.getElementById('rightClicks'),
-    toggleFlag : document.getElementById('toggleFlag'),
-    frame : document.getElementById('frame'),
-    visor : document.getElementById('visor'),
-    timer : document.getElementById('timer'),
-    smiley : document.getElementById('smiley'),
-    outerMenu : document.getElementById('outerMenu'),
-    outerGrid : document.getElementById('outerGrid'),
-    newGame : document.getElementById('newGame'),
-    inputHeight : document.getElementById('inputHeight'),
-    inputWidth : document.getElementById('inputWidth'),
-    inputMines : document.getElementById('inputMines'),
-    question : document.getElementById('question'),
-    currentTime : document.getElementById('currentTime'),
-    totalClicks : document.getElementById('totalClicks'),
-    totalClicksDiv : document.getElementById('totalClicksDiv'),
+const id_elements = {
+    grid: document.getElementById('grid'),
+    mineCount: document.getElementById('mineCount'),
+    leftClicks: document.getElementById('leftClicks'),
+    rightClicks: document.getElementById('rightClicks'),
+    toggleFlag: document.getElementById('toggleFlag'),
+    frame: document.getElementById('frame'),
+    visor: document.getElementById('visor'),
+    timer: document.getElementById('timer'),
+    smiley: document.getElementById('smiley'),
+    outerMenu: document.getElementById('outerMenu'),
+    outerGrid: document.getElementById('outerGrid'),
+    newGame: document.getElementById('newGame'),
+    inputHeight: document.getElementById('inputHeight'),
+    inputWidth: document.getElementById('inputWidth'),
+    inputMines: document.getElementById('inputMines'),
+    question: document.getElementById('question'),
+    currentTime: document.getElementById('currentTime'),
+    totalClicks: document.getElementById('totalClicks'),
+    totalClicksDiv: document.getElementById('totalClicksDiv'),
 }
 
-const difficulties ={
-    'beginner' :{rows : 9, columns : 9, mines : 10},
-    'intermediate' :{rows : 16, columns : 16, mines : 40},
-    'expert' :{rows : 16, columns : 30, mines : 99},
-    'custom' :{},
+const difficulties = {
+    'beginner': {rows: 9, columns: 9, mines: 10},
+    'intermediate': {rows: 16, columns: 16, mines: 40},
+    'expert': {rows: 16, columns: 30, mines: 99},
+    'custom': {},
 }
-
 
 let grid, leftClicks, middleClicks, rightClicks, currentDifficulty, updateTimerInterval;
 let mineCount, ended, shuffledCells, lastElementCell, allCellsArray;
@@ -50,7 +49,7 @@ class Timer {
         this.totalPaused = 0;
         this.running = false;
         this.interval = null;
-        this.onTick = null; // callback opcional
+        this.onTick = null;
     }
 
     start() {
@@ -60,15 +59,12 @@ class Timer {
         const now = performance.now();
         
         if (this.pausedTime) {
-            // retomando apÃ³s pausa
             this.totalPaused += now - this.pausedTime;
             this.pausedTime = 0;
         } else {
-            // primeira vez
             this.startTime = now;
         }
 
-        // atualiza a cada 100ms pra ficar mais preciso visualmente
         this.interval = setInterval(() => {
             if (this.onTick) {
                 const sec = this.getSeconds();
@@ -101,7 +97,7 @@ class Timer {
         if (!this.startTime) return 0;
         const now = this.running ? performance.now() : this.pausedTime;
         return Math.min((now - this.startTime - this.totalPaused) / 1000, 999.999);
-        }
+    }
 
     getSeconds() {
         return Math.floor(this.getTime());
@@ -114,15 +110,15 @@ class Timer {
 
 const timer = new Timer();
 
-function shuffleArray(array){
-    for (let i = array.length - 1; i > 0; i--){
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(randomFloat() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array;
 }
 
-function randomFloat(){
+function randomFloat() {
     const buf = new Uint32Array(2);
     crypto.getRandomValues(buf);
     const hi = buf[0] & 0x001fffff;
@@ -130,155 +126,156 @@ function randomFloat(){
     return (hi * 2 ** 32 + lo) / 2 ** 53;
 }
 
-function endedGame(currentCell){
+function endedGame(currentCell) {
     updateCLicksDiv();
     timer.pause();
     ended = true;
 
-    if(squaresLeft === 0){
-        id_elements.smiley.src = window.smileyCache['sunglasses'] || './assets/smiley/sunglasses.png';
+    if (squaresLeft === 0) {
+        id_elements.smiley.style.backgroundImage = `url(${window.smileyCache['sunglasses'] || './assets/smiley/sunglasses.png'})`;
         allCellsArray.forEach(cell => {
             cell.html.style.cursor = 'auto';
-            if(cell.text === 'mine'){
-                cell.html.src = window.tilesCache['flag'] || './assets/tiles/flag.png';
+            if (cell.text === 'mine') {
+                cell.html.style.backgroundImage = `url(${window.tilesCache['flag'] || './assets/tiles/flag.png'})`;
                 mineCount = 0;
-                makeLCDDiv(id_elements.mineCount, 0);
+                updateLCDDiv(id_elements.mineCount, 0);
             }
         });
-        
         return;
     }
 
-    id_elements.smiley.src = window.smileyCache['dead'] || './assets/smiley/dead.png'
+    id_elements.smiley.style.backgroundImage = `url(${window.smileyCache['dead'] || './assets/smiley/dead.png'})`;
     allCellsArray.forEach(cell => {
         cell.html.style.cursor = 'auto';
-        if(cell.text === 'mine'){
-            if(cell === currentCell){
-                cell.html.src = window.tilesCache['mine_red'] || './assets/tiles/mine_red.png';
+        if (cell.text === 'mine') {
+            if (cell === currentCell) {
+                cell.html.style.backgroundImage = `url(${window.tilesCache['mine_red'] || './assets/tiles/mine_red.png'})`;
+            } else if (cell.variant != 'flag') {
+                cell.html.style.backgroundImage = `url(${window.tilesCache['mine'] || './assets/tiles/mine.png'})`;
             }
-            else if(cell.variant != 'flag'){
-                cell.html.src = window.tilesCache['mine'] || './assets/tiles/mine.png';
-            }
-        }
-        else if(cell.variant === 'flag'){
-            cell.html.src = window.tilesCache['mine_x'] || './assets/tiles/mine_x.png';
+        } else if (cell.variant === 'flag') {
+            cell.html.style.backgroundImage = `url(${window.tilesCache['mine_x'] || './assets/tiles/mine_x.png'})`;
         }
     });
-    
 }
 
-function clickCell(row, column, mouseButton, trueClick){
+function clickCell(row, column, mouseButton, trueClick) {
     const cell = grid[row][column];
     fileName = cell.text;
 
-    if(leftClicks === 0){
+    if (leftClicks === 0) {
         populateMines(cell);
         calculateNumbers();
         updateTimerInterval = setInterval(() => {
-            makeLCDDiv(id_elements.timer, timer.getSeconds());
+            updateLCDDiv(id_elements.timer, timer.getSeconds());
         }, 500);
 
         setInterval(() => id_elements.currentTime.textContent = timer.getTime().toFixed(2), 10);
     }
 
-    if(cell.variant==='flag' && trueClick && mouseButton===0){return;} // to prevent clicking on cells with flags
+    if (cell.variant === 'flag' && trueClick && mouseButton === 0) {
+        return;
+    }
 
-    if(leftClicks === 0 && cell.text === 'mine' && mouseButton === 0){
+    if (leftClicks === 0 && cell.text === 'mine' && mouseButton === 0) {
         restartGame(currentDifficulty);
         clickCell(row, column, 0, true);
         return;
     }
 
-    if(!ended && !cell.clicked && !won){
-
-        if(mouseButton === 0 && !toggleFlag){
-            if(trueClick){leftClicks++};
+    if (!ended && !cell.clicked && !won) {
+        if (mouseButton === 0 && !toggleFlag) {
+            if (trueClick) {
+                leftClicks++;
+            }
             cell.clicked = true;
             fileName = cell.text;
-            if(cell.text === 'mine'){
+            if (cell.text === 'mine') {
                 ended = true;
-                id_elements.smiley.src = window.smileyCache['dead'] || './assets/smiley/dead.png'
+                id_elements.smiley.style.backgroundImage = `url(${window.smileyCache['dead'] || './assets/smiley/dead.png'})`;
                 endedGame(cell);
                 return;
-            }
-            else{
+            } else {
                 cell.html.style.cursor = 'auto';
                 squaresLeft--;
-                cell.variant= '';
+                cell.variant = '';
             }
 
             calculateEmptySpaces(row, column, 0, false);
-            cell.html.src = window.tilesCache[cell.text] || `./assets/tiles/${cell.text}.png`;         
+            cell.html.style.backgroundImage = `url(${window.tilesCache[cell.text] || `./assets/tiles/${cell.text}.png`})`;
         }
     }
     
-    makeLCDDiv(id_elements.mineCount, mineCount);
-    if(leftClicks === 1 && !ended) timer.start();
-    if(squaresLeft === 0 && mineCount >= 0){
+    updateLCDDiv(id_elements.mineCount, mineCount);
+    if (leftClicks === 1 && !ended) timer.start();
+    if (squaresLeft === 0 && mineCount >= 0) {
         endedGame(cell);
     }
     
     updateCLicksDiv();
 }
 
-async function calculateEmptySpaces(row, column){
+async function calculateEmptySpaces(row, column) {
     const cell = grid[row][column];
-    const offsets = [[-1,0], [0,-1], [0,1], [1,0]];
-    if(cell.text === 'empty'){
-        for(const [di, dj] of offsets) {
+    const offsets = [[-1, 0], [0, -1], [0, 1], [1, 0]];
+    if (cell.text === 'empty') {
+        for (const [di, dj] of offsets) {
             const ni = row + di;
             const nj = column + dj;
-            if(ni >= 0 && ni < rows && nj >= 0 && nj < columns){
-                if(grid[ni][nj].text !== 'mine' && !grid[ni][nj].clicked && grid[ni][nj].variant !== 'flag'){clickCell(ni, nj, 0, false);}
+            if (ni >= 0 && ni < rows && nj >= 0 && nj < columns) {
+                if (grid[ni][nj].text !== 'mine' && !grid[ni][nj].clicked && grid[ni][nj].variant !== 'flag') {
+                    clickCell(ni, nj, 0, false);
+                }
             }
         }
     }
-
 }
 
-function calculateNumbers(){
-    const offsets = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]];
-    for(let i = 0; i < rows; i++){
-        for(let j = 0; j < columns; j++){
-            if(grid[i][j].text !== 'mine'){
+function calculateNumbers() {
+    const offsets = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < columns; j++) {
+            if (grid[i][j].text !== 'mine') {
                 let numberBombs = 0;
-                for(const [di, dj] of offsets) {
+                for (const [di, dj] of offsets) {
                     const ni = i + di;
                     const nj = j + dj;
-                    if(ni >= 0 && ni < rows && nj >= 0 && nj < columns && grid[ni][nj].text === 'mine') {
+                    if (ni >= 0 && ni < rows && nj >= 0 && nj < columns && grid[ni][nj].text === 'mine') {
                         numberBombs++;
                     }
                 }
-                if(numberBombs === 0){numberBombs = 'empty';}
+                if (numberBombs === 0) {
+                    numberBombs = 'empty';
+                }
                 grid[i][j].text = numberBombs;
             }
         }
     }
 }
 
-function middleMouseMode(row, column){
+function middleMouseMode(row, column) {
     middleClicks++;
     const cell = grid[row][column];
     let possibleBombs = 0;
 
-    if(!cell.clicked || cell.text === 'empty') return;
+    if (!cell.clicked || cell.text === 'empty') return;
     
-    const offsets = [[-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]];
+    const offsets = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
     
-    for(const [di, dj] of offsets){
+    for (const [di, dj] of offsets) {
         const ni = row + di;
         const nj = column + dj;
-        if(ni >= 0 && ni < rows && nj >= 0 && nj < columns){
-            if(!grid[ni][nj].clicked && grid[ni][nj].variant === 'flag') possibleBombs++;
+        if (ni >= 0 && ni < rows && nj >= 0 && nj < columns) {
+            if (!grid[ni][nj].clicked && grid[ni][nj].variant === 'flag') possibleBombs++;
         }
     }
 
-    if(possibleBombs === cell.text){
-        for(const [di, dj] of offsets){
+    if (possibleBombs === cell.text) {
+        for (const [di, dj] of offsets) {
             const ni = row + di;
             const nj = column + dj;
-            if(ni >= 0 && ni < rows && nj >= 0 && nj < columns){
-                if(!grid[ni][nj].clicked && grid[ni][nj].variant !== 'flag') clickCell(ni, nj, 0, false)
+            if (ni >= 0 && ni < rows && nj >= 0 && nj < columns) {
+                if (!grid[ni][nj].clicked && grid[ni][nj].variant !== 'flag') clickCell(ni, nj, 0, false);
             }
         }
     }
@@ -286,107 +283,118 @@ function middleMouseMode(row, column){
     updateCLicksDiv();
 }
 
-function middleMousePreview(cell){
-
+function middleMousePreview(cell) {
     const row = cell.row;
     const column = cell.column;
 
-    const offsets = [[0,0], [-1,-1], [-1,0], [-1,1], [0,-1], [0,1], [1,-1], [1,0], [1,1]];
+    const offsets = [[0, 0], [-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]];
     
-    for(const [di, dj] of offsets){
+    for (const [di, dj] of offsets) {
         const ni = row + di;
         const nj = column + dj;
-        if(ni >= 0 && ni < rows && nj >= 0 && nj < columns){
-            
-            if(!grid[ni][nj].clicked && grid[ni][nj].variant !== 'flag'){
-                grid[ni][nj].html.src = grid[ni][nj].variant ? (window.tilesCache[`${grid[ni][nj].variant}_pressed`] || `./assets/tiles/${grid[ni][nj].variant}_pressed.png`) : (window.tilesCache['empty'] || './assets/tiles/empty.png');
+        if (ni >= 0 && ni < rows && nj >= 0 && nj < columns) {
+            if (!grid[ni][nj].clicked && grid[ni][nj].variant !== 'flag') {
+                const tile = grid[ni][nj].variant ? 
+                    (window.tilesCache[`${grid[ni][nj].variant}_pressed`] || `./assets/tiles/${grid[ni][nj].variant}_pressed.png`) : 
+                    (window.tilesCache['empty'] || './assets/tiles/empty.png');
+                grid[ni][nj].html.style.backgroundImage = `url(${tile})`;
             }
         }
     }
 }
 
-function undoMiddleMousePreview(){
-
-    for(element of allCellsArray){
-        if (!element.clicked){
-            element.html.src = element.variant ? (window.tilesCache[element.variant] || `./assets/tiles/${element.variant}.png`) : (window.tilesCache['unpressed'] || `./assets/tiles/unpressed.png`)
+function undoMiddleMousePreview() {
+    for (element of allCellsArray) {
+        if (!element.clicked) {
+            const tile = element.variant ? 
+                (window.tilesCache[element.variant] || `./assets/tiles/${element.variant}.png`) : 
+                (window.tilesCache['unpressed'] || './assets/tiles/unpressed.png');
+            element.html.style.backgroundImage = `url(${tile})`;
         }
     }
 }
 
-function makeLCDDiv(element, number){
-    let newDiv = document.createElement('div');
-
-    for(let digit of String(number).padStart(3,'0')){
-        const newDigit = document.createElement('img');
+function makeLCDDiv(element, number) {
+    
+    element.replaceChildren();
+    
+    for (let digit of String(number).padStart(3, '0')) {
+        const newDigit = document.createElement('div');
         newDigit.className = 'sprite';
-        newDigit.src = window.lcdCache?.[digit] || `./assets/lcd/${digit}.png`;
-        newDigit.ondragstart = () => false;
+        newDigit.style.backgroundImage = `url(${window.lcdCache?.[digit] || `./assets/lcd/${digit}.png`})`;
         newDigit.style.width = '13rem';
-        newDiv.appendChild(newDigit);
+        newDigit.style.height = '23rem';
+        newDigit.style.backgroundSize = 'contain';
+        newDigit.style.backgroundRepeat = 'no-repeat';
+        element.appendChild(newDigit);
     }
-    element.replaceChildren(newDiv);
 }
 
-function openMenu(){
+function updateLCDDiv(element, number){
+    
+    const digits = String(number).padStart(3, '0');
+    const LCDSlots = element.children;
+    for(let i=0; i<3; i++){
+        LCDSlots[i].style.backgroundImage = `url(${window.lcdCache?.[digits[i]] || `./assets/lcd/${digits[i]}.png`})`;
+    }
+}
 
-    if(!menuIsOPen){
+function openMenu() {
+    if (!menuIsOPen) {
         timer.pause();
         id_elements.outerMenu.style.display = '';
         id_elements.outerGrid.style.display = 'none';
-    }
-    else{
-        if(!ended) timer.start();
+    } else {
+        if (!ended) timer.start();
         id_elements.outerGrid.style.display = '';
         id_elements.outerMenu.style.display = 'none';
     }
     menuIsOPen = !menuIsOPen;
     updateFontSize();
-
 }
 
-function populateMines(cell){
+function populateMines(cell) {
     shuffledCells = shuffleArray(shuffledCells);
     let skippedFirstCLick = false;
-    for(let i=0; i<mines; i++){
-        if(shuffledCells[i] === cell) skippedFirstCLick = true;
+    for (let i = 0; i < mines; i++) {
+        if (shuffledCells[i] === cell) skippedFirstCLick = true;
         else shuffledCells[i].text = 'mine';
     }
-    if(skippedFirstCLick) shuffledCells[mines].text = 'mine';
+    if (skippedFirstCLick) shuffledCells[mines].text = 'mine';
 }
 
-function generateAllCellsArray(tmpGrid){
+function generateAllCellsArray(tmpGrid) {
     grid = [];
     shuffledCells = [];
     allCellsArray = [];
 
-    for(let i = 0; i < rows; i++){
-    grid[i] = [];
-        for(let j = 0; j < columns; j++){
-            grid[i].push({row : i, column : j, text : 'empty', clicked : false, variant : ''});
+    for (let i = 0; i < rows; i++) {
+        grid[i] = [];
+        for (let j = 0; j < columns; j++) {
+            grid[i].push({row: i, column: j, text: 'empty', clicked: false, variant: ''});
             shuffledCells.push(grid[i][j]);
         }
     }
 
-    for(let i=0; i<currentDifficulty.rows; i++){
-        for(let j=0; j<currentDifficulty.columns; j++){
+    for (let i = 0; i < currentDifficulty.rows; i++) {
+        for (let j = 0; j < currentDifficulty.columns; j++) {
             grid[i][j].html = tmpGrid[i][j];
             allCellsArray.push(grid[i][j]);
         }
     }
 }
 
-function updateCLicksDiv(){
+function updateCLicksDiv() {
     id_elements.totalClicksDiv.title = `Left: ${leftClicks}\nRight: ${rightClicks}\nChords: ${middleClicks}`;
-    id_elements.totalClicks.textContent = leftClicks+rightClicks+middleClicks;
+    id_elements.totalClicks.textContent = leftClicks + rightClicks + middleClicks;
 }
 
-function updateFontSize(){
+function updateFontSize() {
     document.documentElement.style.fontSize = `${1}px`;
     
     const mainWindow = document.getElementById('mainWindow');
-    const actualWidth = mainWindow.offsetWidth+2;
-    const actualHeight = mainWindow.offsetHeight+2;
+    const actualWidth = mainWindow.offsetWidth + 2;
+    const actualHeight = mainWindow.offsetHeight + 2;
     
     const vw = window.innerWidth;
     const vh = window.innerHeight;
@@ -396,26 +404,25 @@ function updateFontSize(){
         (vh * 0.98) / actualHeight
     );
     
-    if(!isMobile) scale = Math.min(scale, 3);
+    if (!isMobile) scale = Math.min(scale, 3);
 
     document.documentElement.style.fontSize = `${scale}px`;
 }
 
-function newGame(){
-
+function newGame() {
     const selected = document.querySelector('input[name="difficulty"]:checked');
     difficulties['custom'].rows = Number(id_elements.inputHeight.value);
     difficulties['custom'].columns = Number(id_elements.inputWidth.value);
     difficulties['custom'].mines = Number(id_elements.inputMines.value);
 
-    if (isNaN(difficulties['custom'].rows) || difficulties['custom'].rows<1){
+    if (isNaN(difficulties['custom'].rows) || difficulties['custom'].rows < 1) {
         difficulties['custom'].rows = 1;
     }
-    if (isNaN(difficulties['custom'].columns) || difficulties['custom'].columns<8){
+    if (isNaN(difficulties['custom'].columns) || difficulties['custom'].columns < 8) {
         difficulties['custom'].columns = 8;
     }
-    if (isNaN(difficulties['custom'].mines) || difficulties['custom'].mines<1 || difficulties['custom'].mines>=difficulties.rows*difficulties['custom'].columns){
-        difficulties['custom'].mines = Math.ceil(difficulties['custom'].columns*difficulties['custom'].rows*0.2);
+    if (isNaN(difficulties['custom'].mines) || difficulties['custom'].mines < 1 || difficulties['custom'].mines >= difficulties.rows * difficulties['custom'].columns) {
+        difficulties['custom'].mines = Math.ceil(difficulties['custom'].columns * difficulties['custom'].rows * 0.2);
     }
 
     toggleQuestion = id_elements.question.checked;
@@ -424,22 +431,10 @@ function newGame(){
     restartGame(difficulties[selected.value]);
 }
 
-function restartGame(difficulty){
-
+function restartGame(difficulty) {
     grid = [];
 
     currentDifficulty = difficulty;
-    // ------------
-    // currentDifficulty.mines = 249;
-    // currentDifficulty.rows = 50;
-    // currentDifficulty.columns = 50;
-    // ------------
-
-    // ------------
-    // currentDifficulty.mines = 1;
-    // currentDifficulty.rows = 22;
-    // currentDifficulty.columns = 22;
-    // ------------
 
     rows = currentDifficulty.rows;
     columns = currentDifficulty.columns;
@@ -458,7 +453,7 @@ function restartGame(difficulty){
     middleClicks = 0;
     rightClicks = 0;
     mineCount = mines;
-    squaresLeft = rows*columns - mines;
+    squaresLeft = rows * columns - mines;
     toggleFlag = false;
 
     id_elements.mineCount.style.boxShadow = "none";
@@ -466,26 +461,27 @@ function restartGame(difficulty){
     id_elements.grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
     id_elements.grid.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
 
-    id_elements.grid.replaceChildren();difficulty
+    id_elements.grid.replaceChildren();
     const tmpGrid = [];
 
-    id_elements.smiley.src = window.smileyCache['smiley'] || './assets/smiley/smiley.png'
+    id_elements.smiley.style.backgroundImage = `url(${window.smileyCache['smiley'] || './assets/smiley/smiley.png'})`;
 
-    for(let i = 0; i < rows; i++){
+    for (let i = 0; i < rows; i++) {
         tmpGrid[i] = [];
-        for(let j = 0; j < columns; j++){
-            const cell = document.createElement('img');
+        for (let j = 0; j < columns; j++) {
+            const cell = document.createElement('div');
             cell.style.width = '16rem';
+            cell.style.height = '16rem';
             cell.className = 'cell sprite';
-            cell.src = window.tilesCache['unpressed'] || './assets/tiles/unpressed.png';
+            cell.style.backgroundImage = `url(${window.tilesCache['unpressed'] || './assets/tiles/unpressed.png'})`;
+            cell.style.backgroundSize = 'contain';
+            cell.style.backgroundRepeat = 'no-repeat';
             tmpGrid[i][j] = cell;
-            cell.ondragstart = () => false;
             id_elements.grid.appendChild(cell);
-
         }
     }
 
-    if(menuIsOPen) openMenu(); 
+    if (menuIsOPen) openMenu();
 
     generateAllCellsArray(tmpGrid);
     handleEvents();
@@ -495,60 +491,55 @@ function restartGame(difficulty){
     updateCLicksDiv();
 }
 
-function useFlag(cell){
+function useFlag(cell) {
     rightClicks++;
-    if(toggleQuestion){
-        if(cell.variant === 'flag'){
+    if (toggleQuestion) {
+        if (cell.variant === 'flag') {
             cell.variant = 'question';
             mineCount++;
             fileName = cell.variant;
-        }
-        else if(cell.variant === 'question'){
+        } else if (cell.variant === 'question') {
             cell.variant = '';
             fileName = 'unpressed';
-        }
-        else{
+        } else {
             cell.variant = 'flag';
             mineCount--;
             fileName = cell.variant;
         }
-    }
-    else{
-        if(cell.variant === 'flag'){
+    } else {
+        if (cell.variant === 'flag') {
             cell.variant = '';
             mineCount++;
             fileName = 'unpressed';
-        }
-        else{
+        } else {
             cell.variant = 'flag';
             mineCount--;
             fileName = cell.variant;
         }
     }
-    cell.html.src = window.tilesCache[fileName] || `./assets/tiles/${fileName}.png`;
-    makeLCDDiv(id_elements.mineCount, mineCount);
+    cell.html.style.backgroundImage = `url(${window.tilesCache[fileName] || `./assets/tiles/${fileName}.png`})`;
+    updateLCDDiv(id_elements.mineCount, mineCount);
     updateCLicksDiv();
 }
 
-function handleEvents(){
-    allCellsArray.forEach(function(cell){
-        cell.html.addEventListener('pointerdown',function(e){
+function handleEvents() {
+    allCellsArray.forEach(function(cell) {
+        cell.html.addEventListener('pointerdown', function(e) {
             holdingTime = Date.now();
 
-            if(e.button === 0) longPressed = false;
+            if (e.button === 0) longPressed = false;
 
-            if(!longPressed){
-                if(!ended && (e.button === 1 || e.buttons === 3)){
+            if (!longPressed) {
+                if (!ended && (e.button === 1 || e.buttons === 3)) {
                     middleMouse = true;
                     middleMousePreview(cell);
                 }
-                if(!ended && !cell.clicked){
-                    if((e.buttons === 2 || (e.button === 0 && toggleFlag))){
-                        if(!middleMouse) useFlag(cell);
-                    }
-                    else if(e.buttons === 1 && cell.variant != 'flag'){
-                        id_elements.smiley.src = window.smileyCache['wonder'] || './assets/smiley/wonder.png';
-                        cell.html.src = window.tilesCache['empty'] || './assets/tiles/empty.png';
+                if (!ended && !cell.clicked) {
+                    if ((e.buttons === 2 || (e.button === 0 && toggleFlag))) {
+                        if (!middleMouse) useFlag(cell);
+                    } else if (e.buttons === 1 && cell.variant != 'flag') {
+                        id_elements.smiley.style.backgroundImage = `url(${window.smileyCache['wonder'] || './assets/smiley/wonder.png'})`;
+                        cell.html.style.backgroundImage = `url(${window.tilesCache['empty'] || './assets/tiles/empty.png'})`;
                     }
                 }
             }
@@ -556,88 +547,86 @@ function handleEvents(){
         
         cell.html.addEventListener('pointerup', e => {
             const now = Date.now();
-            if(now - holdingTime > placeFlagDelay && e.button === 0 && !cell.clicked && !ended){
+            if (now - holdingTime > placeFlagDelay && e.button === 0 && !cell.clicked && !ended) {
                 useFlag(cell);
                 longPressed = true;
-            }
-            else{
-                if(e.button === 0 && !middleMouse)clickCell(cell.row, cell.column, e.button, true);
-                if(!ended && ((middleMouse && e.buttons === 0) || (now-lastTap < doubleTapDelay))){
+            } else {
+                if (e.button === 0 && !middleMouse) clickCell(cell.row, cell.column, e.button, true);
+                if (!ended && ((middleMouse && e.buttons === 0) || (now - lastTap < doubleTapDelay))) {
                     middleMouse = false;
                     undoMiddleMousePreview();
-                    if(cell.clicked) middleMouseMode(cell.row, cell.column)
-                };
+                    if (cell.clicked) middleMouseMode(cell.row, cell.column);
+                }
             }
 
             lastTap = now;
         });
 
-        cell.html.addEventListener('mouseover',function(e){
+        cell.html.addEventListener('mouseover', function(e) {
             holdingTime = Date.now();
-            if(!ended && e.buttons === 1 && !cell.clicked && cell.variant != 'flag' && !toggleFlag){
-                cell.html.src = cell.variant? (window.tilesCache[`${cell.variant}_pressed`] || `./assets/tiles/${cell.variant}_pressed.png`) :  (window.tilesCache['empty'] || './assets/tiles/empty.png');
+            if (!ended && e.buttons === 1 && !cell.clicked && cell.variant != 'flag' && !toggleFlag) {
+                const tile = cell.variant ? 
+                    (window.tilesCache[`${cell.variant}_pressed`] || `./assets/tiles/${cell.variant}_pressed.png`) : 
+                    (window.tilesCache['empty'] || './assets/tiles/empty.png');
+                cell.html.style.backgroundImage = `url(${tile})`;
             }
-            if(!ended && middleMouse) middleMousePreview(cell);
+            if (!ended && middleMouse) middleMousePreview(cell);
         });
 
-        cell.html.addEventListener('pointerleave',function(e){
-            if(!ended && !cell.clicked) cell.html.src = window.tilesCache['unpressed'] || './assets/tiles/unpressed.png';
-            else if(!ended && cell.variant){cell.html.src = window.tilesCache[cell.variant] || `./assets/tiles/${cell.variant}.png`;}
-            if(!ended) undoMiddleMousePreview();
+        cell.html.addEventListener('pointerleave', function(e) {
+            if (!ended && !cell.clicked) {
+                cell.html.style.backgroundImage = `url(${window.tilesCache['unpressed'] || './assets/tiles/unpressed.png'})`;
+            } else if (!ended && cell.variant) {
+                cell.html.style.backgroundImage = `url(${window.tilesCache[cell.variant] || `./assets/tiles/${cell.variant}.png`})`;
+            }
+            if (!ended) undoMiddleMousePreview();
         });
-    })
-
+    });
 }
 
 id_elements.smiley.addEventListener('pointerdown', e => {
-    if(e.button === 0){
-        id_elements.smiley.src = window.smileyCache['pressed'] || './assets/smiley/pressed.png';
+    if (e.button === 0) {
+        id_elements.smiley.style.backgroundImage = `url(${window.smileyCache['pressed'] || './assets/smiley/pressed.png'})`;
     }
 });
 
 id_elements.smiley.addEventListener('pointerleave', e => {
-    if(e.buttons === 1){
-        if(squaresLeft===0){
-            id_elements.smiley.src = window.smileyCache['sunglasses'] || './assets/smiley/sunglasses.png';
+    if (e.buttons === 1) {
+        if (squaresLeft === 0) {
+            id_elements.smiley.style.backgroundImage = `url(${window.smileyCache['sunglasses'] || './assets/smiley/sunglasses.png'})`;
+        } else if (ended) {
+            id_elements.smiley.style.backgroundImage = `url(${window.smileyCache['dead'] || './assets/smiley/dead.png'})`;
+        } else {
+            id_elements.smiley.style.backgroundImage = `url(${window.smileyCache['smiley'] || './assets/smiley/smiley.png'})`;
         }
-        else if(ended){
-            id_elements.smiley.src = window.smileyCache['dead'] || './assets/smiley/dead.png';
-        }
-        else{
-            id_elements.smiley.src = window.smileyCache['smiley'] || './assets/smiley/smiley.png';
-        } 
     }
 });
 
-id_elements.smiley.ondragstart = () => false;
-
 document.addEventListener('pointerup', (e) => {
     longPressed = false;
-    if(squaresLeft===0){
-        id_elements.smiley.src = window.smileyCache['sunglasses'] || './assets/smiley/sunglasses.png';
+    if (squaresLeft === 0) {
+        id_elements.smiley.style.backgroundImage = `url(${window.smileyCache['sunglasses'] || './assets/smiley/sunglasses.png'})`;
+    } else if (ended) {
+        id_elements.smiley.style.backgroundImage = `url(${window.smileyCache['dead'] || './assets/smiley/dead.png'})`;
+    } else {
+        id_elements.smiley.style.backgroundImage = `url(${window.smileyCache['smiley'] || './assets/smiley/smiley.png'})`;
     }
-    else if(ended){
-        id_elements.smiley.src = window.smileyCache['dead'] || './assets/smiley/dead.png';
-    }
-    else{
-        id_elements.smiley.src = window.smileyCache['smiley'] || './assets/smiley/smiley.png';
-    } 
 
-    if(middleMouse && e.buttons === 0){
+    if (middleMouse && e.buttons === 0) {
         middleMouse = false;
         undoMiddleMousePreview();
     }
 });
 
 id_elements.mineCount.addEventListener('pointerup', e => {
-    if(e.button === 0){
+    if (e.button === 0) {
         toggleFlag = !toggleFlag;
-        id_elements.mineCount.style.boxShadow = toggleFlag? "2rem 2rem 0rem rgba(255, 0, 0, 0.5)" : "none";
+        id_elements.mineCount.style.boxShadow = toggleFlag ? "2rem 2rem 0rem rgba(255, 0, 0, 0.5)" : "none";
     }
 });
 
 id_elements.timer.addEventListener('pointerup', e => {
-    if(e.button === 0){
+    if (e.button === 0) {
         openMenu();
     }
 });
@@ -651,15 +640,14 @@ id_elements.grid.addEventListener('contextmenu', e => e.preventDefault());
 window.addEventListener("resize", () => updateFontSize());
 
 document.addEventListener('keydown', (e) => {
-    if(e.key === 'r' || e.key === 'R') {
+    if (e.key === 'r' || e.key === 'R') {
         menuIsOPen = false;
         restartGame(currentDifficulty);
     }
 
-    if(e.key === 'Escape') {
+    if (e.key === 'Escape') {
         openMenu();
     }
 });
-
 
 restartGame(difficulties['beginner']);
