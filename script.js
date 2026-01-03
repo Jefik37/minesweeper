@@ -460,7 +460,9 @@ function restartGame(difficulty) {
 
     id_elements.grid.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
     id_elements.grid.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
-
+    id_elements.grid.style.width = `${columns*16}rem`;
+    id_elements.grid.style.height = `${rows*16}rem`;
+    
     id_elements.grid.replaceChildren();
     const tmpGrid = [];
 
