@@ -10,7 +10,7 @@
 <body>
 
     <script src="./preload.js"></script>
-    
+
     <div id="mainWindow" class="outerBorder">
         <div class="outerBorder">
             <div class="outerBorder">
@@ -18,7 +18,7 @@
                 <div class="innerBorder marginBorder">
                     <div id='visor' class="innerBorder">
                         <div id="mineCount" class="lcd innerBorder"></div>
-                        <img src="./assets/smiley/smiley.png" id="smiley" class="innerBorder">
+                        <div id="smiley" class="innerBorder sprite"></div>
                         <div id="timer" class="lcd innerBorder"></div>
                     </div>
                 </div>
@@ -30,8 +30,8 @@
                     </div>
 
                     <div id="outerMenu" class="innerBorder centeredDivs marginBorder" style="display: none;">
-                        <div class="innerBorder menuBorder">
-                            <div id="menuBorder" class="innerBorder centeredDivs menuBorder">
+                        <div class="innerBorder">
+                            <div id="menuBorder" class="innerBorder centeredDivs">
                                 <div id="menu" class="centeredDivs">
                                     
                                     <div id="stats">
@@ -68,20 +68,18 @@
 
                                     <div id="startDiv" style="margin-top: 2rem;">
     
-                                        <div id="startButton" onclick="newGame()"><img id="startImg" src="./assets/smiley/sunglasses.png" class="sprite">Start</div>
+                                        <div class="outerBorder"><div id="startButton" class= 'outerBorder' onclick="newGame()">Start</div></div>
                                         
                                         <label>
-                                            <div class='hiddenDiv'><input id="question" type="checkbox" checked></div>
-                                            Marks (?)</label>
+                                            <div class='hiddenDiv'><input id="question" type="checkbox" checked><img id='flagImg' src="./assets/tiles/flag.png"></div>
+                                            Marks (?)
+                                        </label>
                                     </div>
 
                                 </div>
                             </div>
                         </div>
                     </div>
-
-
-
 
             </div>
         </div>
