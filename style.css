@@ -5,6 +5,7 @@ body{
     margin: 0;
     background-color: rgb(34, 34, 34);
     font-family: Tahoma, Verdana, Arial, sans-serif;
+    -webkit-user-drag: none;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -81,6 +82,9 @@ body{
 }
 
 #smiley{
+    background-image: url('./assets/smiley/smiley.png');
+    width: 24rem;
+    height: 24rem;
     image-rendering: crisp-edges;
     image-rendering: -moz-crisp-edges;
     image-rendering: pixelated;
@@ -104,6 +108,9 @@ body{
     image-rendering: -moz-crisp-edges;
     image-rendering: pixelated;
     user-select: none;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .cell{
@@ -149,15 +156,17 @@ body{
     font-size: 12rem;
     display: flex;
     align-items: center;
-    gap: 2rem;
+    place-items: center;
+    padding: 0;
     cursor: pointer;
     font-weight: bold;
-    padding-right: 4rem;
+    padding: 2rem 4rem;
 }
 
 #startImg{
     width: 18rem;
     height: 18rem;
+    background-image: url("./assets/smiley/sunglasses.png");
 }
 
 input[type="radio"], 
@@ -201,5 +210,12 @@ label:has(input:is([type="radio"], [type="checkbox"]):checked)::before {
     padding: 0.5rem;
     border: 0;
     box-sizing: border-box;
-    border-radius: 1rem;
+    border-radius: 1rem; 
+}
+
+#flagImg{
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
 }
